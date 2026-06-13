@@ -1,0 +1,6 @@
+{
+  "name": "WorkPulse AI",
+  "description": "Enterprise SaaS platform that transforms calendar activity and meeting frequency into actionable workforce cost intelligence with AI recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
