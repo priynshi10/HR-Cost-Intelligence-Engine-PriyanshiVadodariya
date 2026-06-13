@@ -5,8 +5,9 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, RefreshCw, Layers, CheckCircle2, Trash, Link2, HelpCircle, ShieldAlert, Sparkles, Filter, ChevronRight, X } from 'lucide-react';
+import { Calendar, RefreshCw, Layers, CheckCircle2, Trash, Link2, HelpCircle, ShieldAlert, Sparkles, Filter, ChevronRight, X, Edit, Plus } from 'lucide-react';
 import { Meeting, Project } from '../types';
+import MeetingFormModal from './MeetingFormModal';
 
 interface AttributionViewProps {
   meetings: Meeting[];
@@ -14,6 +15,8 @@ interface AttributionViewProps {
   onApproveMeeting: (id: string, projectId: string) => void;
   onDiscardMeeting: (id: string, reason: string) => void;
   onUpdateProjectMatch: (id: string, projectId: string) => void;
+  onSaveMeeting: (meeting: Meeting) => void;
+  onDeleteMeeting: (id: string) => void;
 }
 
 export default function AttributionView({
@@ -21,12 +24,18 @@ export default function AttributionView({
   projects,
   onApproveMeeting,
   onDiscardMeeting,
-  onUpdateProjectMatch
+  onUpdateProjectMatch,
+  onSaveMeeting,
+  onDeleteMeeting
 }: AttributionViewProps) {
   const [filterProject, setFilterProject] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'discarded'>('all');
   const [syncing, setSyncing] = useState(false);
   const [lastSyncText, setLastSyncText] = useState('Sync Status: Live Up-to-date');
+
+  // Modal forms states for editing/creating meetings
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [activeEditingMeeting, setActiveEditingMeeting] = useState<Meeting | undefined>(undefined);
 
   // Review waste state
   const [wasteReviewLimit, setWasteReviewLimit] = useState(false);
@@ -69,36 +78,49 @@ export default function AttributionView({
     <div className="space-y-6">
       
       {/* Top Title Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white">Project Attribution Center</h2>
           <p className="text-xs text-zinc-400 mt-0.5">Link corporate meeting slots and shared alignments to correct client or internal budget codes.</p>
         </div>
 
-        {/* Integration Status widget */}
-        <div className="flex items-center gap-4 p-3 bg-zinc-950/40 rounded-xl border border-zinc-900 text-xs">
-          <div className="flex items-center gap-2 pr-4 border-r border-zinc-800">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <div>
-              <p className="font-bold text-white">Google Calendar</p>
-              <p className="text-[9px] text-zinc-500 uppercase">SYNCHRONIZED</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 pr-4 border-r border-zinc-800">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <div>
-              <p className="font-bold text-white">Outlook</p>
-              <p className="text-[9px] text-zinc-500 uppercase">SYNCHRONIZED</p>
-            </div>
-          </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Custom Scheduling CTA */}
           <button
-            onClick={triggerSync}
-            disabled={syncing}
-            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-all select-none disabled:opacity-50"
+            onClick={() => {
+              setActiveEditingMeeting(undefined);
+              setFormModalOpen(true);
+            }}
+            className="px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-2 border-none cursor-pointer"
+            title="Schedule a brand new meeting slot manually"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
+            <Plus className="w-4 h-4" />
+            <span>Schedule New Meeting</span>
           </button>
+
+          {/* Integration Status widget */}
+          <div className="flex items-center gap-3 p-2 bg-zinc-950/40 rounded-xl border border-zinc-900 text-xs">
+            <div className="flex items-center gap-1.5 pr-3 border-r border-zinc-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <div>
+                <p className="font-bold text-white text-[10px]">Google</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 pr-3 border-r border-zinc-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <div>
+                <p className="font-bold text-white text-[10px]">Outlook</p>
+              </div>
+            </div>
+            <button
+              onClick={triggerSync}
+              disabled={syncing}
+              className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-all select-none disabled:opacity-50 border-none bg-transparent cursor-pointer"
+            >
+              <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
+              <span>Sync</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -237,7 +259,7 @@ export default function AttributionView({
             <tbody className="divide-y divide-zinc-900">
               {filteredMeetings.length === 0 ? (
                 <tr>
-                  <td colspan="6" className="p-12 text-center text-zinc-500">
+                  <td colSpan={6} className="p-12 text-center text-zinc-500">
                     No verified attribution records found matching filters.
                   </td>
                 </tr>
@@ -344,26 +366,56 @@ export default function AttributionView({
 
                       <td className="px-6 py-4 text-right">
                         {isPending ? (
-                          <div className="flex justify-end gap-1.5">
+                          <div className="flex justify-end gap-1.5 items-center">
+                            <button
+                              onClick={() => {
+                                setActiveEditingMeeting(m);
+                                setFormModalOpen(true);
+                              }}
+                              className="p-1 hover:bg-zinc-900 text-zinc-500 hover:text-indigo-400 rounded transition-colors border-none bg-transparent cursor-pointer"
+                              title="Modify date, time or participants roster"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               onClick={() => handleApprove(m.id, m.suggestedProjectId)}
-                              className="px-2.5 py-1 bg-indigo-500 text-[#09090b] hover:bg-indigo-400 rounded font-bold text-[10px] active:scale-95 transition-transform cursor-pointer"
+                              className="px-2.5 py-1 bg-indigo-500 text-[#09090b] hover:bg-indigo-400 rounded font-bold text-[10px] active:scale-[0.98] transition-transform cursor-pointer border-none"
                               title="Approve sync suggestions"
                             >
                               Approve
                             </button>
                             <button
                               onClick={() => handleOpenDiscard(m.id)}
-                              className="p-1 hover:bg-zinc-900 text-zinc-500 hover:text-red-400 rounded transition-colors"
-                              title="Exclude as unmapped waste"
+                              className="p-1 hover:bg-zinc-900 text-zinc-500 hover:text-red-400 rounded transition-colors border-none bg-transparent cursor-pointer"
+                              title="Delete or exclude this block completely"
                             >
                               <Trash className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-zinc-600 italic">
-                            {isApproved ? 'Approved Link' : `Discarded: ${m.rejectionReason || 'Exempt'}`}
-                          </span>
+                          <div className="flex justify-end gap-2 items-center">
+                            <button
+                              onClick={() => {
+                                setActiveEditingMeeting(m);
+                                setFormModalOpen(true);
+                              }}
+                              className="p-1.5 hover:bg-zinc-900 text-indigo-400 hover:text-indigo-300 rounded transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1 text-[10px]"
+                              title="Modify date, time or participants roster"
+                            >
+                              <Edit className="w-3 h-3" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleOpenDiscard(m.id)}
+                              className="p-1 hover:bg-zinc-900 text-zinc-500 hover:text-red-400 rounded transition-colors border-none bg-transparent cursor-pointer"
+                              title="Delete or exclude this block completely"
+                            >
+                              <Trash className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="text-[10px] text-zinc-650 italic">
+                              {isApproved ? 'Approved' : `Discarded: ${m.rejectionReason || 'Exempt'}`}
+                            </span>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -375,7 +427,7 @@ export default function AttributionView({
         </div>
       </div>
 
-      {/* Rejection/Discard Modal Overlay Dialog */}
+       {/* Rejection/Discard Modal Overlay Dialog */}
       {discardModalId && (
         <div className="fixed inset-0 bg-[#09090b]/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative">
@@ -388,40 +440,72 @@ export default function AttributionView({
 
             <div className="flex gap-3 mb-4 text-red-400">
               <ShieldAlert className="w-5 h-5 shrink-0" />
-              <h3 className="text-sm font-bold text-white">Exclude Attribution Record</h3>
+              <h3 className="text-sm font-bold text-white">Exclude or Delete Record</h3>
             </div>
 
             <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-              Exclude this meeting from billable research and project hours. Set the audit reason:
+              Would you like to temporarily exclude this meeting from billable project rates (marked as unmapped waste) or permanently delete it from the company registry?
             </p>
 
             <div className="space-y-4">
-              <input
-                type="text"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full text-xs bg-[#09090b] border border-zinc-900 focus:border-red-500 rounded-lg p-2.5 text-white outline-none"
-              />
+              <div>
+                <label className="text-[10px] font-bold text-zinc-500 block mb-1 uppercase">Exclusion Reason (for audits):</label>
+                <input
+                  type="text"
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  className="w-full text-xs bg-[#09090b] border border-zinc-900 focus:border-red-500 rounded-lg p-2.5 text-white outline-none"
+                />
+              </div>
 
-              <div className="flex gap-2 justify-end">
+              <div className="flex flex-col gap-2 pt-2 border-t border-zinc-900/60">
                 <button
                   type="button"
-                  onClick={() => setDiscardModalId(null)}
-                  className="px-3 py-1.5 text-zinc-400 hover:text-white text-xs font-semibold"
+                  onClick={() => {
+                    onDeleteMeeting(discardModalId);
+                    setDiscardModalId(null);
+                  }}
+                  className="w-full py-2 bg-red-650 hover:bg-red-600 text-white rounded text-xs font-bold text-center cursor-pointer border-none"
                 >
-                  Cancel
+                  Delete Permanently
                 </button>
+                
                 <button
                   type="submit"
                   onClick={handleConfirmDiscard}
-                  className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold"
+                  className="w-full py-2 bg-zinc-905 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 rounded text-xs font-bold text-center cursor-pointer"
                 >
-                  Confirm Exclusion
+                  Exclude as Waste Center
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDiscardModalId(null)}
+                  className="w-full py-1.5 text-zinc-500 hover:text-white text-xs font-semibold text-center cursor-pointer border-none bg-transparent"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Meeting scheduler & updater modal */}
+      {formModalOpen && (
+        <MeetingFormModal
+          meeting={activeEditingMeeting}
+          projects={projects}
+          onSave={(completedMeeting) => {
+            onSaveMeeting(completedMeeting);
+            setFormModalOpen(false);
+            setActiveEditingMeeting(undefined);
+          }}
+          onClose={() => {
+            setFormModalOpen(false);
+            setActiveEditingMeeting(undefined);
+          }}
+        />
       )}
 
     </div>

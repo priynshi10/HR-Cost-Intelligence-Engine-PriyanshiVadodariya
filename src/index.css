@@ -1,1 +1,343 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ==========================================================================
+   GLOBAL CANVAS & SCROLLING: THE SUNSET-OCEAN HARMONY
+   ========================================================================== */
+html, body {
+  background-color: #fcf9f7 !important; /* Extremely soft, warm peach-tinted bright canvas */
+  color: #355C7D !important; /* Deep Ocean main high contrast text */
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-smoothing: antialiased;
+}
+
+/* Standard structural targets overriding the original dark UI classes */
+.bg-\[\#09090b\], 
+#landing-view, 
+#workpulse-app-workspace,
+body {
+  background-color: #fcf9f7 !important;
+  color: #355C7D !important;
+}
+
+/* Perfect Sunset Ambient Glow replacing standard indigo/blue circles */
+#landing-view,
+#workpulse-app-workspace {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(248, 177, 149, 0.15) 0px, transparent 40%),
+    radial-gradient(at 100% 0%, rgba(246, 114, 128, 0.12) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(53, 92, 125, 0.08) 0px, transparent 40%) !important;
+  background-attachment: fixed;
+}
+
+/* ==========================================================================
+   CARDS, PANELS, ASIDES & CONTAINER SHEETS (BRIGHT CHIC PEACH-WHITE)
+   ========================================================================== */
+aside, 
+.bg-\[\#131315\], 
+.bg-\[\#131315\]\/80,
+.bg-\[\#0d0d0f\], 
+.bg-\[\#0e0e11\], 
+.bg-\[\#121214\],
+.bg-\[\#111114\],
+.bg-zinc-950,
+.bg-zinc-950\/40,
+.bg-zinc-950\/70,
+.bg-zinc-900,
+.bg-zinc-900\/50,
+.bg-[#000],
+.bg-black,
+.bg-black\/60,
+.bg-[#121214],
+.bg-zinc-900\/15 {
+  background-color: #ffffff !important; /* Flat pure-white cards for max bright aesthetics */
+  color: #355C7D !important; /* Deep Ocean text */
+  border-color: rgba(108, 91, 123, 0.1) !important; /* Soft Highland Plum border shade */
+}
+
+/* Floating header/action rails warm highlighted creams */
+.bg-zinc-950\/20,
+.bg-\[\#070709\] {
+  background-color: #fbf0ec !important; /* Sunrise peach soft tinted tray background */
+}
+
+/* List active states and background highlights */
+.bg-zinc-900\/10,
+.bg-zinc-900\/20,
+.bg-zinc-900\/30 {
+  background-color: #f7e6e0 !important; /* Smooth soft Sunset warmth */
+}
+
+/* Crisp form inputs styled with Highland Plum borders & comfortable focus glows */
+input[type="text"],
+input[type="datetime-local"],
+input[type="number"],
+select,
+textarea {
+  background-color: #ffffff !important;
+  color: #355C7D !important;
+  border: 1px solid rgba(108, 91, 123, 0.25) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 2px 0 rgba(108, 91, 123, 0.03) !important;
+}
+
+input[type="text"]:focus,
+input[type="datetime-local"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #F67280 !important; /* Active Sunset Rose focus border */
+  box-shadow: 0 0 0 4px rgba(246, 114, 128, 0.15) !important;
+}
+
+/* ==========================================================================
+   VIBRANT ACCENTS & COLORFUL BADGES (MAPS DIRECTLY TO PALETTE)
+   ========================================================================== */
+/* Sunrise Peach Tag / Pill Container */
+.bg-indigo-500\/10,
+.bg-indigo-500\/15,
+.bg-indigo-600\/10 {
+  background-color: rgba(248, 177, 149, 0.2) !important;
+  color: #C06C84 !important; /* Rich Amethyst Rose text */
+}
+
+/* Vibrant Teal/Emerald Green pill container */
+.bg-emerald-500\/10,
+.bg-emerald-500\/15,
+.bg-emerald-600\/10,
+.bg-emerald-500\/20 {
+  background-color: rgba(53, 92, 125, 0.15) !important; /* Translucent Deep Ocean */
+  color: #355C7D !important;
+}
+
+/* Sunset Rose soft warnings badge */
+.bg-amber-500\/10,
+.bg-amber-500\/15,
+.bg-amber-500\/20 {
+  background-color: rgba(246, 114, 128, 0.15) !important;
+  color: #F67280 !important;
+}
+
+/* Highland Plum alarms/alert badges */
+.bg-red-500\/10,
+.bg-red-500\/15,
+.bg-red-500\/20 {
+  background-color: rgba(108, 91, 123, 0.15) !important;
+  color: #6C5B7B !important;
+}
+
+/* Amethyst Rose additional indicators */
+.bg-pink-500\/10,
+.bg-pink-500\/15,
+.bg-pink-500\/20 {
+  background-color: rgba(192, 108, 132, 0.15) !important;
+  color: #C06C84 !important;
+}
+
+/* ==========================================================================
+   BUTTONS: BRANDED SUNSET GRADIENT (F67280 TO C06C84)
+   ========================================================================== */
+.bg-indigo-600, .bg-[#4f46e5], .bg-indigo-500, .bg-indigo-700, .bg-violet-600 {
+  background-image: linear-gradient(135deg, #F67280 0%, #C06C84 100%) !important;
+  background-color: #F67280 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px -2px rgba(246, 114, 128, 0.25) !important;
+}
+
+.bg-indigo-600:hover, .bg-[#4f46e5]:hover, .bg-indigo-550:hover {
+  background-image: linear-gradient(135deg, #C06C84 0%, #6C5B7B 100%) !important;
+  box-shadow: 0 6px 16px -2px rgba(108, 91, 123, 0.35) !important;
+}
+
+.bg-red-650, .bg-red-600 {
+  background-image: linear-gradient(135deg, #6C5B7B 0%, #355C7D 100%) !important;
+  background-color: #6C5B7B !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.bg-[#070709]\/80 {
+  background-color: #fcf9f7 !important;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY: PALETTE DRIVEN DEEP OCEAN LEGIBILITY
+   ========================================================================== */
+.text-white, 
+.text-\[\#e5e1e4\], 
+.text-zinc-100, 
+.text-zinc-200, 
+.text-zinc-50 {
+  color: #355C7D !important; /* Overwhelmingly crisp aesthetic Deep Ocean */
+}
+
+/* Enforce bright sunset tones on brand headings */
+h1.text-white, h2.text-white, h3.text-white,
+h1 .text-white, h2 .text-white, h3 .text-white {
+  color: #355C7D !important;
+}
+
+/* Prevent text color bugs inside contrasty gradient buttons */
+button.bg-indigo-600 .text-white,
+button.bg-indigo-600 *,
+.bg-gradient-to-r .text-white,
+.bg-gradient-to-tr .text-white,
+button.bg-indigo-600,
+button.from-indigo-600 *,
+.bg-indigo-600 *,
+.bg-indigo-500 *,
+.bg-indigo-700 * {
+  color: #ffffff !important;
+}
+
+/* Secondary palette texts */
+.text-zinc-300, .text-zinc-350 {
+  color: #6C5B7B !important; /* Gorgeous Highland Plum secondary info */
+}
+.text-zinc-400 {
+  color: #C06C84 !important; /* Beautiful Amethyst Rose tags/labels */
+}
+.text-zinc-450, .text-zinc-500 {
+  color: #355C7D !important; /* Solid readability deep ocean */
+}
+.text-zinc-550, .text-zinc-650 {
+  color: #6C5B7B !important;
+}
+.text-zinc-650 {
+  color: #C06C84 !important;
+}
+.text-zinc-600 {
+  color: #355C7D !important;
+}
+
+/* Interactive dynamic label text overrides */
+.text-indigo-400, .text-indigo-300, .text-indigo-455 {
+  color: #C06C84 !important; /* Amethyst Rose key text */
+}
+.text-emerald-400 {
+  color: #355C7D !important; /* Deep Ocean green counterpart */
+}
+.text-red-400 {
+  color: #F67280 !important; /* Sunset rose alerts */
+}
+.text-violet-400 {
+  color: #6C5B7B !important;
+}
+.text-teal-400 {
+  color: #355C7D !important;
+}
+.text-amber-500 {
+  color: #F67280 !important;
+}
+.text-pink-400 {
+  color: #C06C84 !important;
+}
+
+/* SaaS Brand Heading sunset gradients */
+.bg-gradient-to-r.from-indigo-300 {
+  background-image: linear-gradient(135deg, #F67280 0%, #355C7D 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* ==========================================================================
+   BORDERS, LINES, DIVIDERS & NAVIGATION OVERRIDE
+   ========================================================================== */
+.border-zinc-900,
+.border-zinc-805,
+.border-zinc-800,
+.border-zinc-950,
+.border-\[\#1f1f25\],
+.border-zinc-900\/60,
+.border-indigo-500\/10,
+.border-indigo-500\/25,
+.border-zinc-900\/80 {
+  border-color: rgba(108, 91, 123, 0.15) !important; /* Highland Plum subtle lines */
+}
+
+.divide-zinc-900 > :not([hidden]) ~ :not([hidden]),
+.divide-zinc-950 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(108, 91, 123, 0.15) !important;
+}
+
+/* Beautiful Peach-warm Highlights on side navigation */
+.bg-zinc-800.text-indigo-400,
+.bg-zinc-900.text-indigo-400,
+.bg-zinc-900\/40.text-indigo-400 {
+  background-color: rgba(248, 177, 149, 0.25) !important;
+  color: #C06C84 !important;
+}
+
+/* Soft hover effect for lists */
+.hover\:bg-zinc-900\/30:hover {
+  background-color: rgba(248, 177, 149, 0.1) !important;
+}
+
+/* Floating Modals and Dialogs style refinement */
+.bg-\[\#0a0a0c\]\/90 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid rgba(108, 91, 123, 0.2) !important;
+  box-shadow: 0 20px 25px -5px rgba(53, 92, 125, 0.1), 0 10px 10px -5px rgba(53, 92, 125, 0.05) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+/* Progress-bars styling */
+.bg-indigo-600\/10 {
+  background-color: rgba(246, 114, 128, 0.15) !important;
+}
+
+/* ==========================================================================
+   COPILOT & CHAT SPECIFIC SUNSET STYLING
+   ========================================================================== */
+/* Assistant message boxes: soft cream/rose warm comfort box */
+.bg-\[\#111114\] {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(108, 91, 123, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(108, 91, 123, 0.03) !important;
+}
+
+.bg-zinc-950\/60 {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(108, 91, 123, 0.15) !important;
+}
+
+/* Active slider styling matching Sunrise Peach */
+input[type="range"] {
+  background-color: rgba(108, 91, 123, 0.15) !important;
+}
+input[type="range"]::-webkit-slider-thumb {
+  background-color: #F67280 !important;
+}
+
+/* ==========================================================================
+   SCROLLBAR & UTILS
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fcf9f7;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(192, 108, 132, 0.4);
+  border-radius: 9px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(192, 108, 132, 0.6);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 12px rgba(246, 114, 128, 0.2) !important;
+}

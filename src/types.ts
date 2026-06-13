@@ -34,6 +34,8 @@ export interface Meeting {
   recurrence?: string;
   meetingLink?: string;
   sourceCalendar?: 'google' | 'outlook';
+  syncToCalendar?: boolean;
+  notifyAttendees?: boolean;
 }
 
 export type ProjectStatus = 'healthy' | 'at_risk' | 'critical';

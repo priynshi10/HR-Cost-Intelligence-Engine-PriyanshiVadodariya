@@ -54,6 +54,8 @@ import AnomalyView from './components/AnomalyView';
 import ForecastingView from './components/ForecastingView';
 import CopilotView from './components/CopilotView';
 import SettingsView from './components/SettingsView';
+import ProfileModal from './components/ProfileModal';
+import EmployeeView from './components/EmployeeView';
 
 type TabType = 'dashboard' | 'attribution' | 'analytics' | 'anomalies' | 'forecasting' | 'copilot' | 'settings';
 
@@ -62,6 +64,8 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'login' | 'app'>('landing');
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [currentUser, setCurrentUser] = useState<Persona | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [userRoleMode, setUserRoleMode] = useState<'admin' | 'employee'>('admin');
 
   // Core application resources (enables read-write active edits!)
   const [meetings, setMeetings] = useState<Meeting[]>(INITIAL_MEETINGS);
@@ -410,6 +414,61 @@ export default function App() {
     setMeetings(updated);
   };
 
+  const handleSaveMeeting = (updatedMeeting: Meeting) => {
+    setMeetings((prev) => {
+      const exists = prev.some((m) => m.id === updatedMeeting.id);
+      if (exists) {
+        return prev.map((m) => m.id === updatedMeeting.id ? { ...updatedMeeting, isAdminUpdated: true } : m);
+      } else {
+        return [{ ...updatedMeeting, isAdminUpdated: true }, ...prev];
+      }
+    });
+
+    // Create a series of high-fidelity logs for calendar sync and employee notifications
+    const newLogs: { timestamp: string; message: string; type: 'info' | 'success' | 'warn' | 'error' }[] = [];
+    const timestamp = new Date().toISOString();
+
+    // Standard override notification
+    newLogs.push({
+      timestamp,
+      message: `[Corporate Ledger Sync] Manual overrides applied to event: "${updatedMeeting.name}". Total participants: ${updatedMeeting.participants.length}. Projected cost footprint: $${updatedMeeting.costEstimate}.`,
+      type: 'success'
+    });
+
+    // Google Call sync notification
+    if (updatedMeeting.syncToCalendar !== false) {
+      newLogs.push({
+        timestamp,
+        message: `[Google Calendar API v3] Synced event detail mappings for "${updatedMeeting.name}" directly to primary corporate calendar. ID: gc-${updatedMeeting.id}.`,
+        type: 'info'
+      });
+    }
+
+    // Employee notify notification
+    if (updatedMeeting.notifyAttendees !== false && updatedMeeting.participants.length > 0) {
+      const attendeeListString = updatedMeeting.participants.map(p => p.name).join(', ');
+      newLogs.push({
+        timestamp,
+        message: `[Mailing System] Dispatched automated calendar alerts & email invitations to ${updatedMeeting.participants.length} employees: [${attendeeListString}]. Synchronized successfully.`,
+        type: 'success'
+      });
+    }
+
+    setSyncLogs((prev) => [...newLogs, ...prev]);
+  };
+
+  const handleDeleteMeeting = (id: string) => {
+    setMeetings((prev) => prev.filter((m) => m.id !== id));
+    setSyncLogs((prev) => [
+      {
+        timestamp: new Date().toISOString(),
+        message: `[HR Admin Sync] Event ID: "${id}" was permanently removed from the corporate mapping database.`,
+        type: 'warning'
+      },
+      ...prev
+    ]);
+  };
+
   const handleResolveAnomaly = (anomalyId: string, statusType: 'reviewed' | 'resolved') => {
     // Solve anomaly
     const resolved = anomalies.map((a) => {
@@ -428,6 +487,10 @@ export default function App() {
   // Login handler
   const handleLoginSuccess = (selected: Persona) => {
     setCurrentUser(selected);
+    // Auto-initialize role mode based on corporate credentials
+    const roleLower = selected.role.toLowerCase();
+    const isAdmin = roleLower.includes('chro') || roleLower.includes('lead') || roleLower.includes('vp') || roleLower.includes('admin') || selected.id === 'p1' || selected.id === 'p2';
+    setUserRoleMode(isAdmin ? 'admin' : 'employee');
     setCurrentView('app');
     setActiveTab('dashboard');
   };
@@ -711,122 +774,178 @@ export default function App() {
 
           {/* User Profile Card */}
           {currentUser && (
-            <div className="p-3 bg-[#131315]/75 border border-zinc-900 rounded-xl flex items-center gap-3">
+            <button
+              onClick={() => setProfileOpen(true)}
+              className="p-3 bg-[#131315]/80 hover:bg-[#1c1c20] border border-zinc-900 hover:border-zinc-800 rounded-xl flex items-center gap-3 w-full text-left transition-all active:scale-[0.98] group cursor-pointer border-none"
+              title="Click to Open Profile Configuration"
+            >
               <img
                 referrerPolicy="no-referrer"
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full border border-zinc-800 object-cover"
+                className="w-8 h-8 rounded-full border border-zinc-800 object-cover group-hover:scale-105 transition-transform"
               />
               <div className="min-w-0 flex-1 leading-tight">
-                <p className="text-white text-xs font-bold truncate">{currentUser.name}</p>
+                <div className="flex items-center gap-1">
+                  <p className="text-white text-xs font-bold truncate">{currentUser.name}</p>
+                </div>
                 <p className="text-[10px] text-zinc-500 truncate mt-0.5">{currentUser.role}</p>
+                <span className="text-[8.5px] text-indigo-400 font-semibold uppercase tracking-wider block mt-1 opacity-60 group-hover:opacity-100 transition-opacity">View Profile &rarr;</span>
               </div>
-            </div>
+            </button>
           )}
+
+          {/* SaaS View Mode Switcher */}
+          <div className="p-2.5 bg-zinc-950/65 border border-zinc-900 rounded-xl space-y-2">
+            <div className="flex justify-between items-center text-[9px] font-bold text-zinc-500 uppercase tracking-widest leading-none px-1">
+              <span>View Interface Mode</span>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold ${userRoleMode === 'admin' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-amber-500/10 text-amber-500'}`}>
+                {userRoleMode === 'admin' ? 'Admin Suite' : 'Employee Hub'}
+              </span>
+            </div>
+            <div className="flex bg-[#09090b] p-0.5 rounded-lg border border-zinc-900">
+              <button
+                type="button"
+                onClick={() => {
+                  setUserRoleMode('admin');
+                  if (activeTab !== 'dashboard' && activeTab !== 'copilot' && activeTab !== 'settings') {
+                    setActiveTab('dashboard');
+                  }
+                }}
+                className={`flex-1 py-1 text-[9px] uppercase font-bold tracking-wider rounded transition-all cursor-pointer border-none ${
+                  userRoleMode === 'admin'
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'text-zinc-500 hover:text-zinc-300 bg-transparent'
+                }`}
+              >
+                Admin Mode
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setUserRoleMode('employee');
+                  if (activeTab !== 'dashboard' && activeTab !== 'copilot' && activeTab !== 'settings') {
+                    setActiveTab('dashboard');
+                  }
+                }}
+                className={`flex-1 py-1 text-[9px] uppercase font-bold tracking-wider rounded transition-all cursor-pointer border-none ${
+                  userRoleMode === 'employee'
+                    ? 'bg-amber-500 text-zinc-950 shadow'
+                    : 'text-zinc-500 hover:text-zinc-300 bg-transparent'
+                }`}
+              >
+                Employee Mode
+              </button>
+            </div>
+          </div>
 
           {/* Navigation link indexes */}
           <nav className="space-y-1 text-xs font-semibold">
             
-            {/* Tab: Dashboard */}
+            {/* Tab: Dashboard / Employee Insights */}
             <button
               onClick={() => {
                 setActiveTab('dashboard');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
                 activeTab === 'dashboard'
                   ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <LayoutDashboard className="w-4 h-4" />
-                <span>Executive Cockpit</span>
+                <span>{userRoleMode === 'admin' ? 'Executive Cockpit' : 'My Employee Insights'}</span>
               </div>
             </button>
 
-            {/* Tab: Attribution sync */}
-            <button
-              onClick={() => {
-                setActiveTab('attribution');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                activeTab === 'attribution'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-505'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Link2 className="w-4 h-4" />
-                <span>Project Attribution</span>
-              </div>
-              {pendingLinkCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 font-bold font-mono text-[9px]">
-                  {pendingLinkCount}
-                </span>
-              )}
-            </button>
+            {/* Admin-only elements */}
+            {userRoleMode === 'admin' && (
+              <>
+                {/* Tab: Attribution sync */}
+                <button
+                  onClick={() => {
+                    setActiveTab('attribution');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                    activeTab === 'attribution'
+                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
+                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Link2 className="w-4 h-4" />
+                    <span>Project Attribution</span>
+                  </div>
+                  {pendingLinkCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 font-bold font-mono text-[9px]">
+                      {pendingLinkCount}
+                    </span>
+                  )}
+                </button>
 
-            {/* Tab: Analytics spend breakdown */}
-            <button
-              onClick={() => {
-                setActiveTab('analytics');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                activeTab === 'analytics'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <BarChart3 className="w-4 h-4" />
-                <span>Cost Analytics</span>
-              </div>
-            </button>
+                {/* Tab: Analytics spend breakdown */}
+                <button
+                  onClick={() => {
+                    setActiveTab('analytics');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                    activeTab === 'analytics'
+                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
+                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <BarChart3 className="w-4 h-4" />
+                    <span>Cost Analytics</span>
+                  </div>
+                </button>
 
-            {/* Tab: Security anomalies */}
-            <button
-              onClick={() => {
-                setActiveTab('anomalies');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                activeTab === 'anomalies'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <AlertTriangle className="w-4 h-4" />
-                <span>Anomaly Center</span>
-              </div>
-              {activeAlertsCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 text-red-400 font-bold font-mono text-[9px]">
-                  {activeAlertsCount}
-                </span>
-              )}
-            </button>
+                {/* Tab: Security anomalies */}
+                <button
+                  onClick={() => {
+                    setActiveTab('anomalies');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                    activeTab === 'anomalies'
+                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
+                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Anomaly Center</span>
+                  </div>
+                  {activeAlertsCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 text-red-400 font-bold font-mono text-[9px]">
+                      {activeAlertsCount}
+                    </span>
+                  )}
+                </button>
 
-            {/* Tab: Forecasting What if */}
-            <button
-              onClick={() => {
-                setActiveTab('forecasting');
-                setMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                activeTab === 'forecasting'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <LineChart className="w-4 h-4" />
-                <span>What-If Simulator</span>
-              </div>
-            </button>
+                {/* Tab: Forecasting What if */}
+                <button
+                  onClick={() => {
+                    setActiveTab('forecasting');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                    activeTab === 'forecasting'
+                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
+                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <LineChart className="w-4 h-4" />
+                    <span>What-If Simulator</span>
+                  </div>
+                </button>
+              </>
+            )}
 
             {/* Tab: Executive AI Copilot */}
             <button
@@ -834,10 +953,10 @@ export default function App() {
                 setActiveTab('copilot');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
                 activeTab === 'copilot'
                   ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
+                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -861,7 +980,7 @@ export default function App() {
             >
               <div className="flex items-center gap-2.5">
                 <SettingsIcon className="w-4 h-4" />
-                <span>System Settings</span>
+                <span>{userRoleMode === 'admin' ? 'System Settings' : 'Personal Settings'}</span>
               </div>
             </button>
 
@@ -883,14 +1002,25 @@ export default function App() {
         
         {/* Render actual child tab view */}
         {activeTab === 'dashboard' && (
-          <DashboardView
-            projects={projects}
-            meetings={meetings}
-            anomalies={anomalies}
-            onNavigate={(tag) => setActiveTab(tag as any)}
-            onOpenResolveAnomaly={handleGoToResolveAnomaly}
-            onOpenStrategyPlanner={() => setStrategyPlannerOpen(true)}
-          />
+          userRoleMode === 'admin' ? (
+            <DashboardView
+              projects={projects}
+              meetings={meetings}
+              anomalies={anomalies}
+              onNavigate={(tag) => setActiveTab(tag as any)}
+              onOpenResolveAnomaly={handleGoToResolveAnomaly}
+              onOpenStrategyPlanner={() => setStrategyPlannerOpen(true)}
+            />
+          ) : (
+            <EmployeeView
+              currentUser={currentUser!}
+              meetings={meetings}
+              onDisconnectCalendar={handleDisconnectCalendar}
+              onInitiateOAuth={handleInitiateOAuth}
+              googleConnected={settings.googleCalendarConnected}
+              outlookConnected={settings.outlookConnected}
+            />
+          )
         )}
 
         {activeTab === 'attribution' && (
@@ -900,6 +1030,8 @@ export default function App() {
             onApproveMeeting={handleApproveMeeting}
             onDiscardMeeting={handleDiscardMeeting}
             onUpdateProjectMatch={handleUpdateProjectMatch}
+            onSaveMeeting={handleSaveMeeting}
+            onDeleteMeeting={handleDeleteMeeting}
           />
         )}
 
@@ -1003,6 +1135,23 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {profileOpen && currentUser && (
+        <ProfileModal
+          user={currentUser}
+          userRoleMode={userRoleMode}
+          onUpdateUser={(updated) => {
+            setCurrentUser(updated);
+          }}
+          onUpdateRoleMode={(mode) => {
+            setUserRoleMode(mode);
+            if (mode === 'employee' && activeTab !== 'dashboard' && activeTab !== 'copilot' && activeTab !== 'settings') {
+              setActiveTab('dashboard');
+            }
+          }}
+          onClose={() => setProfileOpen(false)}
+        />
       )}
 
     </div>
