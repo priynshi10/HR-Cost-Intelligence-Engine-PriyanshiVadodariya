@@ -26,6 +26,7 @@ export default function DashboardView({
   onOpenStrategyPlanner
 }: DashboardViewProps) {
   const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   // Compute total dynamic stats
   const totalSpend = projects.reduce((sum, p) => sum + p.costToDate, 0);
@@ -36,6 +37,50 @@ export default function DashboardView({
 
   const pendingCount = meetings.filter((m) => m.status === 'pending').length;
   const activeAnomalyCount = anomalies.filter((a) => a.status === 'triggered').length;
+
+  const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  
+  // Aggregate spend/budget dynamically across all projects:
+  const monthlyData = months.map((month) => {
+    let spend = 0;
+    let budget = 0;
+    projects.forEach((proj) => {
+      const hist = proj.historyMonthly?.find((h) => h.month === month);
+      if (hist) {
+        spend += hist.spend;
+        budget += hist.budget;
+      } else {
+        spend += proj.costToDate / 6;
+        budget += proj.budget / 6;
+      }
+    });
+    return { month, spend, budget };
+  });
+
+  const maxVal = Math.max(...monthlyData.map((d) => Math.max(d.spend, d.budget))) * 1.15 || 100000;
+
+  const width = 1000;
+  const height = 320;
+  const left = 55;
+  const right = 55;
+  const top = 30;
+  const bottom = 40;
+
+  const chartW = width - left - right;
+  const chartH = height - top - bottom;
+
+  const points = monthlyData.map((d, index) => {
+    const x = left + (index / (months.length - 1)) * chartW;
+    const ySpend = height - bottom - (d.spend / maxVal) * chartH;
+    const yBudget = height - bottom - (d.budget / maxVal) * chartH;
+    return { x, ySpend, yBudget, ...d };
+  });
+
+  const actualSpendPath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.ySpend.toFixed(1)}`).join(' ');
+  const actualSpendArea = `${actualSpendPath} L ${points[points.length - 1].x.toFixed(1)} ${(height - bottom).toFixed(1)} L ${points[0].x.toFixed(1)} ${(height - bottom).toFixed(1)} Z`;
+  const budgetPath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.yBudget.toFixed(1)}`).join(' ');
+
+  const hoveredPoint = hoveredIdx !== null ? points[hoveredIdx] : null;
 
   return (
     <div className="space-y-6">
@@ -177,49 +222,112 @@ export default function DashboardView({
             </div>
 
             {/* SVG curves */}
-            <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 1000 320">
+            <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 320">
               {/* Gradients */}
               <defs>
                 <linearGradient id="curve-area" x1="0%" x2="0%" y1="0%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#818cf8', stopOpacity: 0.2 }} />
-                  <stop offset="100%" style={{ stopColor: '#818cf8', stopOpacity: 0 }} />
+                  <stop offset="0%" style={{ stopColor: '#6F4E37', stopOpacity: 0.25 }} />
+                  <stop offset="100%" style={{ stopColor: '#6F4E37', stopOpacity: 0 }} />
                 </linearGradient>
               </defs>
 
               {/* Budget curve (dashed) */}
               <path
-                d="M 0 180 L 200 180 L 400 150 L 600 160 L 800 130 L 1000 130"
+                d={budgetPath}
                 fill="none"
-                stroke="#3f3f46"
-                strokeDasharray="8,4"
+                stroke="#8D8176"
+                strokeDasharray="6,4"
                 strokeWidth="2.5"
+                className="transition-all duration-300"
               />
 
               {/* Actual Spend Area */}
               <path
-                d="M 0 320 L 0 240 Q 100 200 200 225 T 400 180 T 600 195 T 800 145 T 1000 120 L 1000 320 Z"
+                d={actualSpendArea}
                 fill="url(#curve-area)"
+                className="transition-all duration-300"
               />
 
               {/* Actual Spend Line */}
               <path
-                d="M 0 240 Q 100 200 200 225 T 400 180 T 600 195 T 800 145 T 1000 120"
+                d={actualSpendPath}
                 fill="none"
-                stroke="#6366f1"
-                strokeWidth="4.5"
+                stroke="#6F4E37"
+                strokeWidth="4"
                 strokeLinecap="round"
+                className="transition-all duration-300"
               />
 
-              {/* Dynamic highlights */}
-              <circle cx="600" cy="195" r="6" fill="#818cf8" stroke="#09090b" strokeWidth="2" />
-              <circle cx="1000" cy="120" r="6" fill="#a78bfa" stroke="#09090b" strokeWidth="2" />
+              {/* Dynamic highlights & triggers */}
+              {points.map((p, idx) => (
+                <g key={idx} className="cursor-pointer">
+                  {/* Invisible larger hover zone */}
+                  <circle
+                    cx={p.x}
+                    cy={p.ySpend}
+                    r="16"
+                    fill="transparent"
+                    onMouseEnter={() => setHoveredIdx(idx)}
+                    onMouseLeave={() => setHoveredIdx(null)}
+                  />
+                  {/* Outer glow during hover */}
+                  {hoveredIdx === idx && (
+                    <circle
+                      cx={p.x}
+                      cy={p.ySpend}
+                      r="10"
+                      fill="#6F4E37"
+                      opacity="0.15"
+                    />
+                  )}
+                  {/* Main Point circle */}
+                  <circle
+                    cx={p.x}
+                    cy={p.ySpend}
+                    r={hoveredIdx === idx ? "6.5" : "4.5"}
+                    fill={hoveredIdx === idx ? "#6F4E37" : "#8B6B4A"}
+                    stroke="#FAF8F5"
+                    strokeWidth="2.5"
+                    className="transition-all duration-150"
+                  />
+                </g>
+              ))}
             </svg>
 
-            {/* Hover Indicator Box */}
-            <div className="absolute top-12 left-[58%] p-2 bg-[#131315] hover:border-zinc-800 border border-zinc-900 rounded-lg shadow-xl text-left hidden md:block">
-              <p className="text-[10px] text-zinc-500 font-mono font-medium">NOV ACTUAL OVERVIEW</p>
-              <p className="text-xs text-white font-bold">$165k <span className="text-[10px] text-indigo-300 font-semibold">(+$15k bump)</span></p>
-            </div>
+            {/* Dynamic Hover Tooltip Box */}
+            {hoveredIdx !== null && hoveredPoint && (
+              <div 
+                className="absolute p-3 bg-white border border-[#E8DDD0] rounded-xl shadow-xl text-left pointer-events-none z-10 transition-all duration-150 animate-fade-in"
+                style={{
+                  left: `${(hoveredPoint.x / width) * 100}%`,
+                  top: `${Math.max(20, hoveredPoint.ySpend - 105)}px`,
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                <p className="text-[9px] text-[#8D8176] font-mono font-black uppercase tracking-wider">{hoveredPoint.month} LEDGER SUMMARY</p>
+                <div className="mt-1.5 space-y-1">
+                  <p className="text-xs text-[#1F1A17] font-black leading-none">
+                    Actual: <span className="text-[#6F4E37] font-mono font-bold">${(hoveredPoint.spend / 1000).toFixed(0)}k</span>
+                  </p>
+                  <p className="text-[11px] text-[#5E5248] leading-none">
+                    Target: <span className="font-mono text-[#8D8176] font-semibold">${(hoveredPoint.budget / 1000).toFixed(0)}k</span>
+                  </p>
+                  <p className={`text-[10px] font-black uppercase tracking-wide leading-none mt-1 ${hoveredPoint.spend > hoveredPoint.budget ? 'text-[#B85042]' : 'text-[#4F7942]'}`}>
+                    {hoveredPoint.spend > hoveredPoint.budget 
+                      ? `+$${((hoveredPoint.spend - hoveredPoint.budget)/1000).toFixed(0)}k overrun` 
+                      : `-$${((hoveredPoint.budget - hoveredPoint.spend)/1000).toFixed(0)}k saved`}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Default Helpful static hint displayed if nothing is hovered */}
+            {hoveredIdx === null && (
+              <div className="absolute top-3 right-4 px-2 py-1 bg-[#FAF8F5]/80 border border-[#E8DDD0]/50 rounded-md text-[9px] text-[#8D8176] font-medium tracking-wide flex items-center gap-1.5 pointer-events-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8B6B4A] animate-pulse"></span>
+                <span>Hover lines to drill down monthly details</span>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between text-[11px] text-zinc-500 uppercase tracking-widest mt-6 px-1 font-mono">

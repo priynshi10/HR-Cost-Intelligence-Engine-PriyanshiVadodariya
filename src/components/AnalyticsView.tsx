@@ -23,6 +23,49 @@ export default function AnalyticsView({ projects, settings }: AnalyticsViewProps
     setExpandedId(expandedId === id ? null : id);
   };
 
+  const [hoveredNode, setHoveredNode] = useState<{ projName: string; month: string; spend: number; x: number; y: number } | null>(null);
+
+  const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const proj1 = projects[0] || { name: 'Platform R&D', historyMonthly: [], costToDate: 840000 };
+  const proj2 = projects[1] || { name: 'Cloud Migration', historyMonthly: [], costToDate: 620000 };
+
+  const proj1Data = months.map(m => {
+    const found = proj1.historyMonthly?.find(h => h.month === m);
+    return { month: m, spend: found ? found.spend : (proj1.costToDate / 6) };
+  });
+
+  const proj2Data = months.map(m => {
+    const found = proj2.historyMonthly?.find(h => h.month === m);
+    return { month: m, spend: found ? found.spend : (proj2.costToDate / 6) };
+  });
+
+  const maxVal = Math.max(...proj1Data.map(d => d.spend), ...proj2Data.map(d => d.spend)) * 1.15 || 100000;
+
+  const width = 800;
+  const height = 200;
+  const left = 45;
+  const right = 45;
+  const top = 25;
+  const bottom = 30;
+
+  const chartW = width - left - right;
+  const chartH = height - top - bottom;
+
+  const proj1Points = proj1Data.map((d, index) => {
+    const x = left + (index / (months.length - 1)) * chartW;
+    const y = height - bottom - (d.spend / maxVal) * chartH;
+    return { x, y, ...d };
+  });
+
+  const proj2Points = proj2Data.map((d, index) => {
+    const x = left + (index / (months.length - 1)) * chartW;
+    const y = height - bottom - (d.spend / maxVal) * chartH;
+    return { x, y, ...d };
+  });
+
+  const path1 = proj1Points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const path2 = proj2Points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
   // Simulated Leaderboard records
   const leaderboard = [
     { team: 'Neon Core Engine', dept: 'Engineering', score: 9.2, status: 'stellar', color: 'text-teal-400' },
@@ -102,7 +145,7 @@ export default function AnalyticsView({ projects, settings }: AnalyticsViewProps
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Curve visualization (Apollo vs Titan) */}
-        <div className="bg-zinc-950/40 border border-zinc-900 p-5 rounded-2xl lg:col-span-8 flex flex-col justify-between">
+        <div className="bg-zinc-950/40 border border-zinc-900 p-5 rounded-2xl lg:col-span-8 flex flex-col justify-between relative">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h4 className="text-sm font-bold text-white">Project Cost Trajectory</h4>
@@ -110,40 +153,105 @@ export default function AnalyticsView({ projects, settings }: AnalyticsViewProps
             </div>
             
             <div className="flex gap-4 text-[10px] tracking-wider uppercase font-bold text-zinc-400 font-mono">
-              <span className="text-indigo-400">● Platform R&D</span>
-              <span className="text-violet-400">-- Cloud Migration</span>
+              <span className="text-[#6F4E37]">● {proj1.name}</span>
+              <span className="text-[#8B6B4A]">-- {proj2.name}</span>
             </div>
           </div>
 
           <div className="relative w-full h-48 mt-2">
             {/* SVG lines */}
-            <svg className="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 800 200">
+            <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 800 200">
               {/* Curve 1 */}
               <path
-                d="M0,150 Q100,110 200,165 T400,80 T600,120 T800,40"
+                d={path1}
                 fill="none"
-                stroke="#818cf8"
+                stroke="#6F4E37"
                 strokeWidth="3.5"
                 strokeLinecap="round"
+                className="transition-all duration-300"
               />
               {/* Curve 2 */}
               <path
-                d="M0,170 Q100,160 200,135 T400,130 T600,155 T800,95"
+                d={path2}
                 fill="none"
-                stroke="#c084fc"
+                stroke="#8B6B4A"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray="6,4"
+                className="transition-all duration-300"
               />
+
+              {/* Interaction triggers for Curve 1 */}
+              {proj1Points.map((p, idx) => (
+                <g key={`p1-${idx}`} className="cursor-pointer">
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="14"
+                    fill="transparent"
+                    onMouseEnter={() => setHoveredNode({ projName: proj1.name, month: p.month, spend: p.spend, x: p.x, y: p.y })}
+                    onMouseLeave={() => setHoveredNode(null)}
+                  />
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={hoveredNode?.projName === proj1.name && hoveredNode?.month === p.month ? "5.5" : "3.5"}
+                    fill="#6F4E37"
+                    stroke="#FAF8F5"
+                    strokeWidth="1.5"
+                    className="transition-all duration-150"
+                  />
+                </g>
+              ))}
+
+              {/* Interaction triggers for Curve 2 */}
+              {proj2Points.map((p, idx) => (
+                <g key={`p2-${idx}`} className="cursor-pointer">
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="14"
+                    fill="transparent"
+                    onMouseEnter={() => setHoveredNode({ projName: proj2.name, month: p.month, spend: p.spend, x: p.x, y: p.y })}
+                    onMouseLeave={() => setHoveredNode(null)}
+                  />
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={hoveredNode?.projName === proj2.name && hoveredNode?.month === p.month ? "5.5" : "3.5"}
+                    fill="#8B6B4A"
+                    stroke="#FAF8F5"
+                    strokeWidth="1.5"
+                    className="transition-all duration-150"
+                  />
+                </g>
+              ))}
             </svg>
+
+            {/* Float Tooltip */}
+            {hoveredNode && (
+              <div 
+                className="absolute p-2 bg-white border border-[#E8DDD0] rounded-lg shadow-lg text-left pointer-events-none z-10 animate-fade-in text-[11px]"
+                style={{
+                  left: `${(hoveredNode.x / width) * 100}%`,
+                  top: `${Math.max(10, hoveredNode.y - 75)}px`,
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                <p className="font-extrabold text-[#1F1A17]">{hoveredNode.projName}</p>
+                <p className="text-zinc-500 font-medium">Month: <span className="text-[#1F1A17] font-semibold">{hoveredNode.month}</span></p>
+                <p className="text-[#6F4E37] font-bold">Spend: ${(hoveredNode.spend / 1000).toFixed(0)}k</p>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between text-[10px] text-zinc-550 uppercase font-bold mt-4 font-mono px-1">
-            <span>Sep 01</span>
-            <span>Sep 08</span>
-            <span>Sep 15</span>
-            <span>Sep 22</span>
-            <span>Sep 29</span>
+            <span>Jul</span>
+            <span>Aug</span>
+            <span>Sep</span>
+            <span>Oct</span>
+            <span>Nov</span>
+            <span>Dec</span>
           </div>
         </div>
 
