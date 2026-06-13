@@ -536,203 +536,352 @@ export default function App() {
 
   if (currentView === 'app' && requiresOnboarding) {
     return (
-      <div className="bg-[#09090b] text-[#e5e1e4] min-h-screen flex items-center justify-center font-sans p-6 selection:bg-indigo-500 selection:text-white leading-snug">
-        <div className="w-full max-w-4xl bg-[#0d0d0f] border border-zinc-900 rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-12 animate-fade-in">
+      <div className="bg-[#FAF8F5] text-[#1F1A17] min-h-screen py-16 px-4 sm:px-6 lg:px-8 font-sans flex flex-col justify-between selection:bg-[#6F4E37] selection:text-white leading-snug animate-fade-in relative overflow-hidden">
+        
+        {/* Decorative Background ambient elements using luxury Bronze & Soft Highlight */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#6F4E37]/5 to-transparent rounded-full filter blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-[#C8A27C]/5 to-transparent rounded-full filter blur-3xl pointer-events-none" />
+
+        <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center relative z-10">
           
-          {/* Left Hero Sidebar decoration */}
-          <div className="md:col-span-4 bg-gradient-to-b from-[#16151a] to-[#09090b] p-8 border-r border-[#1f1f25] flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-zinc-950 font-black">
-                  <Activity className="w-4.5 h-4.5 text-zinc-950" />
-                </div>
-                <span className="text-sm font-black text-white uppercase tracking-wider">WorkPulse AI</span>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold text-white mb-2 tracking-tight">Active Calendar Onboarding</h2>
-                <p className="text-xs text-zinc-450 leading-relaxed font-semibold">Connect your corporate schedule directory to start recalculating team costs and unearthing meeting leaks.</p>
-              </div>
+          {/* Executive Header Lockup */}
+          <div className="flex items-center justify-center gap-3 mb-12">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6F4E37] to-[#8B6B4A] flex items-center justify-center shadow-lg shadow-[#6F4E37]/15">
+              <Activity className="w-5.5 h-5.5 text-white" />
             </div>
-
-            <div className="space-y-4 pt-10">
-              <div className="flex gap-3 items-center">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${onboardingStep >= 1 ? 'bg-indigo-600 text-white font-mono' : 'bg-zinc-900 text-zinc-550 font-mono'}`}>1</div>
-                <span className={`text-[11px] font-semibold ${onboardingStep === 1 ? 'text-white' : 'text-zinc-550'}`}>Workspace Directory Selection</span>
-              </div>
-              <div className="flex gap-3 items-center">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${onboardingStep >= 2 ? 'bg-indigo-600 text-white font-mono' : 'bg-zinc-900 text-zinc-550 font-mono'}`}>2</div>
-                <span className={`text-[11px] font-semibold ${onboardingStep === 2 ? 'text-white' : 'text-zinc-550'}`}>Directory Authentication</span>
-              </div>
-              <div className="flex gap-3 items-center">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${onboardingStep >= 3 ? 'bg-indigo-600 text-white font-mono' : 'bg-zinc-900 text-zinc-550 font-mono'}`}>3</div>
-                <span className={`text-[11px] font-semibold ${onboardingStep === 3 ? 'text-white' : 'text-zinc-550'}`}>Synthesis Ingestion Engine</span>
-              </div>
-            </div>
-
-            <div className="text-[10px] text-zinc-600 font-mono">
-              SECURE SOC2 COMPLIANT
+            <div>
+              <p className="text-lg font-bold tracking-wider text-[#1F1A17] uppercase font-display">WorkPulse <span className="text-[#C8A27C]">AI</span></p>
+              <span className="text-[10px] text-[#5E5248] uppercase tracking-widest font-extrabold block -mt-1 font-mono">Executive Intelligence Suite</span>
             </div>
           </div>
 
-          {/* Right Main Panel */}
-          <div className="md:col-span-8 p-8 md:p-10 flex flex-col justify-between space-y-6">
+          {/* Top Multi-step Status Progress indicator */}
+          <div className="flex items-center justify-center max-w-xl mx-auto mb-14 w-full px-4">
+            <div className="flex items-center w-full">
+              {/* Step 1 */}
+              <div className="flex flex-col items-center flex-1 relative">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border ${
+                  onboardingStep >= 1
+                    ? 'bg-[#6F4E37] text-white border-[#6F4E37] shadow-md shadow-[#6F4E37]/10'
+                    : 'bg-white text-[#8D8176] border-[#E8DDD0]'
+                }`}>
+                  1
+                </div>
+                <span className={`text-[10px] font-bold mt-2 uppercase tracking-wider ${
+                  onboardingStep === 1 ? 'text-[#6F4E37]' : 'text-[#8D8176]'
+                }`}>
+                  Select Directory
+                </span>
+              </div>
+
+              {/* Connector Line */}
+              <div className="flex-1 h-[2px] bg-[#E8DDD0] relative -mt-5">
+                <div className="absolute top-0 left-0 h-full bg-[#6F4E37] transition-all duration-500" style={{ width: onboardingStep > 1 ? '100%' : '0%' }} />
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center flex-1 relative">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border ${
+                  onboardingStep >= 2
+                    ? 'bg-[#6F4E37] text-white border-[#6F4E37] shadow-md shadow-[#6F4E37]/10'
+                    : 'bg-white text-[#8D8176] border-[#E8DDD0]'
+                }`}>
+                  2
+                </div>
+                <span className={`text-[10px] font-bold mt-2 uppercase tracking-wider ${
+                  onboardingStep === 2 ? 'text-[#6F4E37]' : 'text-[#8D8176]'
+                }`}>
+                  Authorize Scope
+                </span>
+              </div>
+
+              {/* Connector Line */}
+              <div className="flex-1 h-[2px] bg-[#E8DDD0] relative -mt-5">
+                <div className="absolute top-0 left-0 h-full bg-[#6F4E37] transition-all duration-500" style={{ width: onboardingStep > 2 ? '100%' : '0%' }} />
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center flex-1 relative">
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border ${
+                  onboardingStep === 3
+                    ? 'bg-[#6F4E37] text-white border-[#6F4E37] shadow-md shadow-[#6F4E37]/10'
+                    : 'bg-white text-[#8D8176] border-[#E8DDD0]'
+                }`}>
+                  3
+                </div>
+                <span className={`text-[10px] font-bold mt-2 uppercase tracking-wider ${
+                  onboardingStep === 3 ? 'text-[#6F4E37]' : 'text-[#8D8176]'
+                }`}>
+                  Process Ingestion
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Card workspace container wrapper */}
+          <motion.div
+            key={onboardingStep}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full bg-white border border-[#E8DDD0] rounded-3xl p-8 sm:p-12 shadow-xl shadow-[#6F4E37]/2 overflow-hidden relative animate-fade-in animate-duration-300"
+          >
             
             {onboardingStep === 1 && (
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] uppercase tracking-widest font-mono text-indigo-400 font-bold block mb-1">STEP 1 OF 3</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight">Select your Workspace Schedule Provider</h3>
-                  <p className="text-xs text-zinc-400 mt-1 font-semibold">Choose the engine where your organization coordinates meetings, sprints, and calendars:</p>
+              <div className="space-y-8">
+                <div className="text-center space-y-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EDE4] border border-[#E8DDD0] text-[10px] font-bold text-[#6F4E37] uppercase tracking-widest animate-fade-in">
+                    <LayoutDashboard className="w-3.5 h-3.5" />
+                    STEP 1 of 3: Workspace Directory Alignment
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#1F1A17] tracking-tight">
+                    Synchronize Your Corporate Scheduling
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#5E5248] max-w-xl mx-auto leading-relaxed">
+                    Select the workspace calendar ecosystem used by your organization. WorkPulse automatically reads aggregate scheduling metadata to map real-time project burn rates.
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                   {/* Google Card */}
                   <button
                     onClick={() => {
                       setSelectedOnboardingProvider('google');
                       setOnboardingStep(2);
                     }}
-                    className="p-5 bg-[#121214] hover:bg-[#16171d] border border-zinc-900 hover:border-indigo-500/40 rounded-2xl text-left transition-all cursor-pointer group"
+                    className="p-6 sm:p-8 bg-white border border-[#E8DDD0] hover:border-[#6F4E37] rounded-2xl text-left transition-all hover:shadow-xl hover:shadow-[#6F4E37]/5 group cursor-pointer relative overflow-hidden"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold mb-3 font-mono text-sm leading-none">G</div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-indigo-400">Google Calendar</h4>
-                    <p className="text-[11px] text-zinc-550 mt-1 leading-normal font-medium">Connect corporate mailboxes via Google Secure OAuth 2.0 Client.</p>
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#6F4E37]/5 to-transparent rounded-bl-full pointer-events-none" />
+                    <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] border border-[#E8DDD0] flex items-center justify-center font-bold text-lg text-[#6F4E37] mb-6 shadow-sm">
+                      <span className="text-xl font-bold bg-gradient-to-r from-[#6F4E37] to-[#C8A27C] bg-clip-text text-transparent">G</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-base font-bold text-[#1F1A17] group-hover:text-[#6F4E37] transition-colors flex items-center gap-1.5">
+                        Google Workspace
+                        <ChevronRight className="w-4 h-4 text-[#8D8176] group-hover:translate-x-1 transition-transform" />
+                      </h4>
+                      <p className="text-xs text-[#5E5248] leading-relaxed">
+                        Connect corporate email domains securely utilizing Google's verified OAuth 2.0 Client protocol.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 pt-5 border-t border-[#FAF8F5] space-y-2">
+                      <span className="text-[9px] font-bold text-[#8D8176] uppercase tracking-wider block">CAPABILITIES:</span>
+                      <ul className="text-[11px] text-[#5E5248] space-y-1.5 leading-normal">
+                        <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#4F7942] shrink-0" /> Full Google Calendar API v3 integrations</li>
+                        <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#4F7942] shrink-0" /> Cross-domain workspace indexing support</li>
+                      </ul>
+                    </div>
                   </button>
 
-                  {/* Outlook Card */}
+                  {/* Microsoft Card */}
                   <button
                     onClick={() => {
                       setSelectedOnboardingProvider('outlook');
                       setOnboardingStep(2);
                     }}
-                    className="p-5 bg-[#121214] hover:bg-[#16171d] border border-zinc-900 hover:border-indigo-500/40 rounded-2xl text-left transition-all cursor-pointer group"
+                    className="p-6 sm:p-8 bg-white border border-[#E8DDD0] hover:border-[#6F4E37] rounded-2xl text-left transition-all hover:shadow-xl hover:shadow-[#6F4E37]/5 group cursor-pointer relative overflow-hidden"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold mb-3 font-mono text-sm leading-none">M</div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-indigo-400">Microsoft Outlook</h4>
-                    <p className="text-[11px] text-zinc-550 mt-1 leading-normal font-medium">Link with corporate directories via Microsoft Graph API.</p>
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-[#C8A27C]/5 to-transparent rounded-bl-full pointer-events-none" />
+                    <div className="w-12 h-12 rounded-xl bg-[#FAF8F5] border border-[#E8DDD0] flex items-center justify-center font-bold text-lg text-[#C8A27C] mb-6 shadow-sm">
+                      <span className="text-xl font-bold bg-gradient-to-r from-[#C8A27C] to-[#E6C7A6] bg-clip-text text-transparent">O</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h4 className="text-base font-bold text-[#1F1A17] group-hover:text-[#6F4E37] transition-colors flex items-center gap-1.5">
+                        Microsoft Office 365
+                        <ChevronRight className="w-4 h-4 text-[#8D8176] group-hover:translate-x-1 transition-transform" />
+                      </h4>
+                      <p className="text-xs text-[#5E5248] leading-relaxed">
+                        Interface with employee calendars dynamically using standard corporate Office 365 Graph protocols.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 pt-5 border-t border-[#FAF8F5] space-y-2">
+                      <span className="text-[9px] font-bold text-[#8D8176] uppercase tracking-wider block">CAPABILITIES:</span>
+                      <ul className="text-[11px] text-[#5E5248] space-y-1.5 leading-normal">
+                        <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#4F7942] shrink-0" /> Azure Active Directory SSO & Mapping</li>
+                        <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-[#4F7942] shrink-0" /> Microsoft Graph secure enterprise endpoints</li>
+                      </ul>
+                    </div>
                   </button>
                 </div>
 
-                {/* Scope list validation */}
-                <div className="bg-[#131115]/30 border border-zinc-900 rounded-2xl p-4 space-y-2.5">
-                  <span className="text-[9px] font-bold tracking-wider font-mono text-indigo-400 uppercase">SYNCHRONIZED OCCURRENCE METADATA SCOPE:</span>
-                  <div className="grid grid-cols-2 gap-2 text-[10px] text-zinc-400 font-semibold">
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Title & Subject</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Description & Notes</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Host & Organizer</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Attendee list / emails</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Duration minutes</div>
-                    <div className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Recurrence pattern</div>
-                    <div className="flex items-center gap-1.5 border-t border-b border-transparent py-0.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Google Meet/Teams links</div>
+                {/* Premium Visual Workflow Illustration */}
+                <div className="bg-[#F3EDE4]/60 border border-[#E8DDD0] rounded-2xl p-6 mt-8">
+                  <span className="text-[10px] font-bold tracking-wider text-[#6F4E37] uppercase block mb-4 text-center">
+                    REAL-TIME LEDGER SYNCHRONIZATION PIPELINE:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center text-[#1F1A17]">
+                    <div className="space-y-1.5">
+                      <div className="mx-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#6F4E37] border border-[#E8DDD0] shadow-sm">
+                        <Calendar className="w-4 h-4" />
+                      </div>
+                      <p className="text-[11px] font-bold">1. Calendar Ingest</p>
+                      <p className="text-[9.5px] text-[#5E5248] leading-normal px-1">Gathers schedules from secure endpoints.</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="mx-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#8B6B4A] border border-[#E8DDD0] shadow-sm">
+                        <Link2 className="w-4 h-4" />
+                      </div>
+                      <p className="text-[11px] font-bold">2. AI Attribution</p>
+                      <p className="text-[9.5px] text-[#5E5248] leading-normal px-1">Maps events seamlessly to core projects.</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="mx-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#C8A27C] border border-[#E8DDD0] shadow-sm">
+                        <BarChart3 className="w-4 h-4" />
+                      </div>
+                      <p className="text-[11px] font-bold">3. Cost Intelligence</p>
+                      <p className="text-[9.5px] text-[#5E5248] leading-normal px-1">Calculates spent dollars with exact rates.</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="mx-auto w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#6F4E37] border border-[#E8DDD0] shadow-sm">
+                        <Sparkles className="w-4 h-4" />
+                      </div>
+                      <p className="text-[11px] font-bold">4. Executive Insights</p>
+                      <p className="text-[9.5px] text-[#5E5248] leading-normal px-1">Minimizes meeting waste & highlights drag.</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {onboardingStep === 2 && (
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] uppercase tracking-widest font-mono text-indigo-400 font-bold block mb-1">STEP 2 OF 3</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight">
-                    Authorize Security Token integration
+              <div className="space-y-8">
+                <div className="text-center space-y-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EDE4] border border-[#E8DDD0] text-[10px] font-bold text-[#5E5248] uppercase tracking-widest">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#4F7942]" />
+                    STEP 2 of 3: Secure Authorized Integrations
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#1F1A17] tracking-tight">
+                    Authorize Security Mappings
                   </h3>
-                  <p className="text-xs text-zinc-400 mt-1 font-medium">
-                    Establish secure protocols to read corporate organization schedules and meetings data safely:
+                  <p className="text-xs sm:text-sm text-[#5E5248] max-w-xl mx-auto leading-relaxed">
+                    Confirm alignment with read-only schedule parameters. WorkPulse never processes primary raw email content, maintaining robust executive transparency and privacy standards.
                   </p>
                 </div>
 
-                <div className="p-6 bg-zinc-950/40 border border-zinc-900 rounded-2xl text-center space-y-4">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto text-indigo-400">
-                    <ShieldCheck className="w-6 h-6 text-indigo-400" />
+                <div className="p-8 bg-[#FAF8F5] border border-[#E8DDD0] rounded-2xl text-center space-y-6 max-w-xl mx-auto shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-white border border-[#E8DDD0] flex items-center justify-center mx-auto text-[#6F4E37] shadow-sm">
+                    <ShieldCheck className="w-7 h-7" />
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">OAuth Secure Protocol Ingest</h4>
-                    <p className="text-[11px] text-zinc-450 mt-1 max-w-sm mx-auto leading-relaxed font-semibold">
-                      WorkPulse integrates directly with {selectedOnboardingProvider === 'google' ? 'Google Calendar OAuth client' : 'Microsoft Azure Graph interface'}. We request readonly scopes.
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-bold text-[#1F1A17]">Read-Only Calendar Synchronization Scope</h4>
+                    <p className="text-xs text-[#5E5248] max-w-md mx-auto leading-relaxed">
+                      By authorizing, you permit WorkPulse to ingest event titles, participant counts, and duration metrics. All synced ledger info is end-to-end sandbox isolated.
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-2 max-w-sm mx-auto">
+                  <div className="max-w-xs mx-auto pt-2">
                     <button
                       onClick={() => handleInitiateOAuth(selectedOnboardingProvider || 'google')}
-                      className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-505 text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wide flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/10 select-none border-none font-sans"
+                      className="w-full py-3 bg-[#6F4E37] text-white rounded-xl text-xs font-bold transition-all uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md hover:-translate-y-0.5 border-none"
                     >
-                      Connect Calendar Channel
+                      <Zap className="w-4 h-4 text-white" />
+                      Authorize & Connect
                     </button>
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center space-y-2 border-t border-zinc-900/60 pt-4">
-                  <p className="text-[10px] text-zinc-450 font-semibold text-center">Testing inside the sandbox? Accelerate by instant-loading static corporate streams:</p>
+                {/* Simulated skip/sandbox option for fast executive testability */}
+                <div className="flex flex-col items-center justify-center space-y-3 border-t border-[#E8DDD0] pt-6 max-w-xl mx-auto">
+                  <p className="text-xs text-[#8D8176] font-bold text-center">Testing inside the interactive preview? Load our prebuilt SaaS stream directly:</p>
                   <button
                     onClick={() => handleSimulateFirstLaunchOnboarding(selectedOnboardingProvider || 'google')}
-                    className="px-4 py-2 bg-zinc-900 hover:bg-zinc-850 text-indigo-455 border border-zinc-800 hover:border-zinc-700 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer hover:-translate-y-0.5"
+                    className="px-6 py-3 bg-white hover:bg-[#FAF8F5] text-[#6F4E37] border border-[#E8DDD0] hover:border-[#8B6B4A] text-xs font-bold rounded-xl transition-all cursor-pointer hover:shadow-xs active:scale-[0.98]"
                   >
-                    🚀 Skip & Ingest Sandbox Calendar stream
+                    🚀 Speed-Run Onboarding with Sandbox Stream
                   </button>
                 </div>
 
-                <div className="flex justify-start">
-                  <button onClick={() => setOnboardingStep(1)} className="text-xs text-zinc-550 hover:text-white flex items-center gap-1 cursor-pointer bg-transparent border-none">
-                    &larr; Choose another provider
+                <div className="flex justify-center pt-2">
+                  <button 
+                    onClick={() => setOnboardingStep(1)} 
+                    className="text-xs text-[#8D8176] hover:text-[#6F4E37] font-bold flex items-center gap-1 cursor-pointer bg-transparent border-none transition-colors"
+                  >
+                    &larr; Choose another scheduling provider
                   </button>
                 </div>
               </div>
             )}
 
             {onboardingStep === 3 && (
-              <div className="space-y-6 font-sans">
-                <div>
-                  <span className="text-[9px] uppercase tracking-widest font-mono text-indigo-400 font-bold block mb-1">STEP 3 OF 3</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight">Indexing & Synthesizing Workforce Costs</h3>
-                  <p className="text-xs text-zinc-450 mt-1 font-semibold">Establishing socket tunnels and calculating seniority rates metrics in backend:</p>
+              <div className="space-y-8">
+                <div className="text-center space-y-3">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EDE4] border border-[#E8DDD0] text-[10px] font-bold text-[#6F4E37] uppercase tracking-widest">
+                    <Activity className="w-3.5 h-3.5 text-[#C8A27C] animate-pulse" />
+                    STEP 3 of 3: Syncing Executive Mappings
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-[#1F1A17] tracking-tight">
+                    Analyzing Cost Footprint Ledgers
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#5E5248] max-w-xl mx-auto leading-relaxed">
+                    Connecting socket tunnels to calculate employee rate cost estimates, tracking meeting duplication overlap on background.
+                  </p>
                 </div>
 
-                {/* Progress bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-mono">
-                    <span className="text-indigo-400 font-bold">Ledger Crawl Progress:</span>
-                    <span className="text-white font-bold">{onboardingProgress}%</span>
-                  </div>
-                  <div className="w-full bg-zinc-950 h-2 rounded-full overflow-hidden border border-zinc-900">
-                    <div className="bg-gradient-to-r from-indigo-500 to-violet-500 h-full transition-all duration-100" style={{ width: `${onboardingProgress}%` }} />
-                  </div>
-                </div>
-
-                {/* Terminal sync logs */}
-                <div className="bg-black border border-zinc-900 p-4 rounded-xl font-mono text-[9px] text-zinc-400 space-y-2 max-h-48 overflow-y-auto leading-relaxed text-left">
-                  {onboardingLogs.map((log, i) => (
-                    <div key={i} className="flex gap-2 text-emerald-400">
-                      <span className="text-zinc-650 font-semibold font-sans">&gt;</span>
-                      <span>{log}</span>
+                <div className="p-6 sm:p-10 bg-white border border-[#E8DDD0] rounded-2xl space-y-6 max-w-xl mx-auto shadow-sm">
+                  {/* Modern and Minimalist progress bar */}
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between text-xs font-bold text-[#1F1A17]">
+                      <span>Processing Ledger Sync...</span>
+                      <span className="text-[#6F4E37]">{onboardingProgress}%</span>
                     </div>
-                  ))}
-                  {onboardingProgress < 100 && (
-                    <div className="text-indigo-300 animate-pulse">&gt; Sync running. Integrating indices...</div>
+                    <div className="w-full bg-[#FAF8F5] h-3.5 rounded-full overflow-hidden border border-[#E8DDD0] p-[2px]">
+                      <div 
+                        className="bg-gradient-to-r from-[#6F4E37] to-[#8B6B4A] h-full rounded-full transition-all duration-150" 
+                        style={{ width: `${onboardingProgress}%` }} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Clean executive ingestion logs */}
+                  <div className="border border-[#E8DDD0] bg-[#FAF8F5] rounded-xl p-4 space-y-2.5 max-h-44 overflow-y-auto">
+                    {onboardingLogs.map((log, i) => (
+                      <div key={i} className="flex gap-2.5 text-[11px] text-[#5E5248] font-medium leading-relaxed animate-fade-in text-left">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#4F7942] shrink-0 mt-0.5" />
+                        <span>{log}</span>
+                      </div>
+                    ))}
+                    {onboardingProgress < 100 && (
+                      <div className="flex gap-2.5 text-[11px] text-[#8D8176] font-bold animate-pulse text-left justify-start">
+                        <span className="w-3.5 h-3.5 rounded-full border-2 border-t-transparent border-[#6F4E37] animate-spin shrink-0 mt-0.5" />
+                        <span>Calculating workload burden rates and synchronization...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {onboardingProgress === 100 && (
+                    <button
+                      onClick={() => {
+                        setActiveTab('dashboard');
+                      }}
+                      className="w-full py-4 bg-[#6F4E37] hover:opacity-90 text-white font-bold rounded-xl text-xs uppercase tracking-widest cursor-pointer shadow-lg shadow-[#6F4E37]/10 flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform active:scale-95 border-none"
+                    >
+                      Enter Executive Cockpit &rarr;
+                    </button>
                   )}
                 </div>
-
-                {onboardingProgress === 100 && (
-                  <button
-                    onClick={() => {
-                      // Finalize onboarding view! Settings connected variables are already modified.
-                      // Navigation goes straight to main dashboard cockpit
-                      setActiveTab('dashboard');
-                    }}
-                    className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl text-xs uppercase tracking-widest cursor-pointer shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform active:scale-95 border-none"
-                  >
-                    Unlock Executive Cockpit &rarr;
-                  </button>
-                )}
               </div>
             )}
 
-            <div className="flex justify-between items-center text-[10px] text-zinc-600 border-t border-zinc-900/40 pt-4">
-              <span className="font-semibold uppercase tracking-wider font-mono">WORKPULSE ENTERPRISE SYSTEM</span>
-              <span>VERIFICATION PIN: CL-884-AX</span>
-            </div>
+          </motion.div>
 
+          {/* Luxury Security and Compliance Badges Footer */}
+          <div className="max-w-5xl mx-auto pt-10 border-t border-[#E8DDD0]/60 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-[#5E5248] font-extrabold w-full mt-10">
+            <div className="flex flex-wrap justify-center gap-4 text-[9.5px] uppercase font-bold text-[#8D8176]">
+              <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[#4F7942]" /> SOC2 TYPE II COMPLIANT</span>
+              <span className="text-[#E8DDD0]">•</span>
+              <span>ISO 27001 KEY CRYPTO SECURE</span>
+              <span className="text-[#E8DDD0]">•</span>
+              <span>GDPR PRIVACY COMPLIANT</span>
+              <span className="text-[#E8DDD0]">•</span>
+              <span>256-BIT SHIELD ENCRYPTION</span>
+            </div>
+            <div className="font-mono text-[9px] uppercase tracking-wider">
+              LEDGER VERIFICATION: CL-884-XE
+            </div>
           </div>
 
         </div>
@@ -741,34 +890,34 @@ export default function App() {
   }
 
   return (
-    <div id="workpulse-app-workspace" className="bg-[#09090b] text-[#e5e1e4] min-h-screen flex flex-col md:flex-row font-sans selection:bg-indigo-500 selection:text-white">
+    <div id="workpulse-app-workspace" className="bg-[#FAF8F5] text-[#1F1A17] min-h-screen flex flex-col md:flex-row font-sans selection:bg-[#6F4E37] selection:text-white">
       
       {/* Mobile Top Bar Navigation */}
-      <div className="md:hidden flex items-center justify-between px-6 h-16 border-b border-zinc-900 bg-[#131315]/80 backdrop-blur-md sticky top-0 z-30">
+      <div className="md:hidden flex items-center justify-between px-6 h-16 border-b border-[#E8DDD0] bg-white/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-indigo-400" />
-          <span className="text-sm font-black text-white uppercase tracking-tight">WorkPulse AI</span>
+          <Activity className="w-5 h-5 text-[#6F4E37]" />
+          <span className="text-sm font-bold text-[#1F1A17] uppercase tracking-tight font-display">WorkPulse AI</span>
         </div>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-zinc-400 hover:text-white">
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-[#5E5248] hover:text-[#1F1A17]">
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Main Persistent Sidebar */}
       <aside
-        className={`fixed md:sticky top-16 md:top-0 left-0 w-64 h-[calc(100vh-4rem)] md:h-screen bg-[#0d0d0f] border-r border-zinc-900/60 p-5 flex flex-col justify-between z-20 transition-transform ${
+        className={`fixed md:sticky top-16 md:top-0 left-0 w-64 h-[calc(100vh-4rem)] md:h-screen bg-[#F3EDE4]/95 border-r border-[#E8DDD0] p-5 flex flex-col justify-between z-20 transition-transform ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="space-y-6">
           {/* Logo Header */}
-          <div className="hidden md:flex items-center gap-3 border-b border-zinc-900/40 pb-5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-[#09090b] font-black">
-              <Activity className="w-4.5 h-4.5 text-indigo-95 stroke-[2.5]" />
+          <div className="hidden md:flex items-center gap-3 border-b border-[#E8DDD0] pb-5">
+            <div className="w-8 h-8 rounded-lg bg-[#6F4E37] flex items-center justify-center text-white font-bold shadow-sm">
+              <Activity className="w-4.5 h-4.5 text-white" />
             </div>
             <div>
-              <p className="text-sm font-black tracking-tight text-white leading-none">WorkPulse AI</p>
-              <span className="text-[9px] text-indigo-400 uppercase tracking-widest font-bold font-mono">HR INTEL SYSTEM</span>
+              <p className="text-sm font-bold tracking-tight text-[#1F1A17] leading-none font-display">WorkPulse AI</p>
+              <span className="text-[9px] text-[#8B6B4A] uppercase tracking-widest font-extrabold font-mono">HR INTEL SYSTEM</span>
             </div>
           </div>
 
@@ -776,34 +925,34 @@ export default function App() {
           {currentUser && (
             <button
               onClick={() => setProfileOpen(true)}
-              className="p-3 bg-[#131315]/80 hover:bg-[#1c1c20] border border-zinc-900 hover:border-zinc-800 rounded-xl flex items-center gap-3 w-full text-left transition-all active:scale-[0.98] group cursor-pointer border-none"
+              className="p-3 bg-white hover:bg-[#FAF8F5] border border-[#E8DDD0] hover:border-[#6F4E37] rounded-xl flex items-center gap-3 w-full text-left transition-all active:scale-[0.98] group cursor-pointer border-none"
               title="Click to Open Profile Configuration"
             >
               <img
                 referrerPolicy="no-referrer"
                 src={currentUser.avatarUrl}
                 alt={currentUser.name}
-                className="w-8 h-8 rounded-full border border-zinc-800 object-cover group-hover:scale-105 transition-transform"
+                className="w-8 h-8 rounded-full border border-[#E8DDD0] object-cover group-hover:scale-105 transition-transform"
               />
               <div className="min-w-0 flex-1 leading-tight">
                 <div className="flex items-center gap-1">
-                  <p className="text-white text-xs font-bold truncate">{currentUser.name}</p>
+                  <p className="text-[#1F1A17] text-xs font-bold truncate">{currentUser.name}</p>
                 </div>
-                <p className="text-[10px] text-zinc-500 truncate mt-0.5">{currentUser.role}</p>
-                <span className="text-[8.5px] text-indigo-400 font-semibold uppercase tracking-wider block mt-1 opacity-60 group-hover:opacity-100 transition-opacity">View Profile &rarr;</span>
+                <p className="text-[10px] text-[#5E5248] truncate mt-0.5">{currentUser.role}</p>
+                <span className="text-[8.5px] text-[#8B6B4A] font-bold uppercase tracking-wider block mt-1 opacity-70 group-hover:opacity-100 transition-opacity">View Profile &rarr;</span>
               </div>
             </button>
           )}
 
           {/* SaaS View Mode Switcher */}
-          <div className="p-2.5 bg-zinc-950/65 border border-zinc-900 rounded-xl space-y-2">
-            <div className="flex justify-between items-center text-[9px] font-bold text-zinc-500 uppercase tracking-widest leading-none px-1">
+          <div className="p-2.5 bg-white border border-[#E8DDD0] rounded-xl space-y-2">
+            <div className="flex justify-between items-center text-[9px] font-bold text-[#8D8176] uppercase tracking-widest leading-none px-1">
               <span>View Interface Mode</span>
-              <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold ${userRoleMode === 'admin' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-amber-500/10 text-amber-500'}`}>
+              <span className={`px-1.5 py-0.5 rounded text-[8px] font-extrabold ${userRoleMode === 'admin' ? 'bg-[#FAF8F5] text-[#6F4E37]' : 'bg-[#FAF8F5] text-[#8B6B4A]'}`}>
                 {userRoleMode === 'admin' ? 'Admin Suite' : 'Employee Hub'}
               </span>
             </div>
-            <div className="flex bg-[#09090b] p-0.5 rounded-lg border border-zinc-900">
+            <div className="flex bg-[#FAF8F5] p-0.5 rounded-lg border border-[#E8DDD0]">
               <button
                 type="button"
                 onClick={() => {
@@ -814,8 +963,8 @@ export default function App() {
                 }}
                 className={`flex-1 py-1 text-[9px] uppercase font-bold tracking-wider rounded transition-all cursor-pointer border-none ${
                   userRoleMode === 'admin'
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'text-zinc-500 hover:text-zinc-300 bg-transparent'
+                    ? 'bg-[#6F4E37] text-white shadow-sm'
+                    : 'text-[#8D8176] hover:text-[#1F1A17] bg-transparent'
                 }`}
               >
                 Admin Mode
@@ -830,8 +979,8 @@ export default function App() {
                 }}
                 className={`flex-1 py-1 text-[9px] uppercase font-bold tracking-wider rounded transition-all cursor-pointer border-none ${
                   userRoleMode === 'employee'
-                    ? 'bg-amber-500 text-zinc-950 shadow'
-                    : 'text-zinc-500 hover:text-zinc-300 bg-transparent'
+                    ? 'bg-[#8B6B4A] text-white shadow-sm'
+                    : 'text-[#8D8176] hover:text-[#1F1A17] bg-transparent'
                 }`}
               >
                 Employee Mode
@@ -848,10 +997,10 @@ export default function App() {
                 setActiveTab('dashboard');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                 activeTab === 'dashboard'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C]'
+                  : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -869,10 +1018,10 @@ export default function App() {
                     setActiveTab('attribution');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                     activeTab === 'attribution'
-                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                      ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                      : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -880,7 +1029,7 @@ export default function App() {
                     <span>Project Attribution</span>
                   </div>
                   {pendingLinkCount > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 font-bold font-mono text-[9px]">
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#6F4E37]/10 text-[#6F4E37] font-bold font-mono text-[9px]">
                       {pendingLinkCount}
                     </span>
                   )}
@@ -892,10 +1041,10 @@ export default function App() {
                     setActiveTab('analytics');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                     activeTab === 'analytics'
-                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                      ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                      : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -910,10 +1059,10 @@ export default function App() {
                     setActiveTab('anomalies');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                     activeTab === 'anomalies'
-                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                      ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                      : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -921,7 +1070,7 @@ export default function App() {
                     <span>Anomaly Center</span>
                   </div>
                   {activeAlertsCount > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 text-red-400 font-bold font-mono text-[9px]">
+                    <span className="px-1.5 py-0.5 rounded-md bg-[#B85042]/10 text-[#B85042] font-bold font-mono text-[9px]">
                       {activeAlertsCount}
                     </span>
                   )}
@@ -933,10 +1082,10 @@ export default function App() {
                     setActiveTab('forecasting');
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+                  className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                     activeTab === 'forecasting'
-                      ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                      : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                      ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                      : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -953,17 +1102,17 @@ export default function App() {
                 setActiveTab('copilot');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer border-none ${
+              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                 activeTab === 'copilot'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30 bg-transparent'
+                  ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                  : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Sparkles className="w-4 h-4 text-violet-400" />
+                <Sparkles className="w-4 h-4 text-[#C8A27C]" />
                 <span>Executive Copilot</span>
               </div>
-              <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+              <span className="w-2 h-2 rounded-full bg-[#C8A27C] animate-pulse"></span>
             </button>
 
             {/* Tab: Custom system settings rules */}
@@ -972,10 +1121,10 @@ export default function App() {
                 setActiveTab('settings');
                 setMobileMenuOpen(false);
               }}
-              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+              className={`w-full p-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border-none ${
                 activeTab === 'settings'
-                  ? 'bg-zinc-900 text-white font-bold border-l-2 border-indigo-500'
-                  : 'text-zinc-400 hover:text-white hover:bg-[#131115]/30'
+                  ? 'bg-white text-[#6F4E37] font-bold border-l-2 border-[#C8A27C] shadow-xs'
+                  : 'text-[#5E5248] hover:text-[#1F1A17] hover:bg-white/40 bg-transparent'
               }`}
             >
               <div className="flex items-center gap-2.5">
@@ -990,7 +1139,7 @@ export default function App() {
         {/* Sidebar Footer Logout layout */}
         <button
           onClick={handleLogout}
-          className="w-full p-2.5 text-left text-xs font-semibold text-zinc-550 hover:text-red-400 hover:bg-[#131315]/30 rounded-lg flex items-center gap-2.5 transition-all mt-auto border-none cursor-pointer"
+          className="w-full p-2.5 text-left text-xs font-semibold text-[#8D8176] hover:text-[#B85042] hover:bg-white/40 rounded-lg flex items-center gap-2.5 transition-all mt-auto border-none cursor-pointer"
         >
           <LogOut className="w-4 h-4" />
           <span>Exit Workspace</span>
